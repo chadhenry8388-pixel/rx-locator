@@ -37,7 +37,9 @@ header{position:sticky;top:0;z-index:30;margin:0 -12px;padding:8px 12px 10px;
  -webkit-backdrop-filter:saturate(180%) blur(14px);backdrop-filter:saturate(180%) blur(14px);
  border-bottom:1px solid var(--line)}
 .top{display:flex;align-items:center;gap:6px;margin-bottom:8px}
-h1{font-size:14px;margin:0;font-weight:700;flex:1;letter-spacing:-.3px}
+h1{font-size:14px;margin:0;font-weight:700;flex:1;letter-spacing:-.3px;cursor:default;
+ -webkit-user-select:none;user-select:none}
+body.editing h1{color:var(--warn)}
 h1 small{font-weight:500;color:var(--dim);font-size:11px;margin-left:5px}
 .ico{background:var(--card);border:1px solid var(--line);color:var(--dim);flex:0 0 auto;
  width:40px;height:40px;border-radius:12px;font-size:16px;cursor:pointer;display:grid;place-items:center}
@@ -142,8 +144,7 @@ footer{text-align:center;font-size:10.5px;color:var(--dim);margin-top:26px;line-
 <div class="wrap">
 <header>
   <div class="top">
-    <h1>💊 조제실 약 위치<small id="meta"></small></h1>
-    <button class="ico" id="edit" aria-pressed="false" aria-label="편집 모드">✏️</button>
+    <h1 id="ttl">💊 조제실 약 위치<small id="meta"></small></h1>
     <button class="ico" id="theme" aria-label="화면 밝기">◐</button>
   </div>
   <div class="sbox">
@@ -157,11 +158,12 @@ footer{text-align:center;font-size:10.5px;color:var(--dim);margin-top:26px;line-
 
 <div id="ebar" class="ebar">
   <b>✏️ 편집 모드</b> — 칸을 열어 약을 추가·수정·삭제할 수 있습니다.
-  변경은 <b>이 휴대폰에만</b> 저장됩니다. 전 직원에게 반영하려면 내보내기 파일을 약사님께 전달하세요.
+  변경은 <b>이 휴대폰에만</b> 저장됩니다. 전 직원에게 반영하려면 내보내기 파일을 약사님께 전달하세요.<br><span style="opacity:.8">새로고침하면 자동으로 편집이 꺼집니다.</span>
   <div class="ebtns">
     <button class="btn pri" id="exp">⬇ 내보내기</button>
     <button class="btn" id="imp">⬆ 불러오기</button>
     <button class="btn" id="rst">↺ 원본</button>
+    <button class="btn" id="quit">✕ 편집 종료</button>
     <input type="file" id="file" accept=".json,application/json" hidden>
   </div>
 </div>
@@ -315,8 +317,17 @@ $('#q').oninput=()=>{render();clearTimeout(rt);
 $('#q').onkeydown=e=>{if(e.key==='Enter')$('#q').blur();};
 $('#clr').onclick=()=>{$('#q').value='';render();$('#q').focus();};
 $('#dx').onclick=()=>$('#dlg').close();
-$('#edit').onclick=e=>{const on=document.body.classList.toggle('editing');
- e.currentTarget.setAttribute('aria-pressed',on);if(CUR&&$('#dlg').open)open_(CUR);};
+function setEdit(on){document.body.classList.toggle('editing',on);
+ if(CUR&&$('#dlg').open)open_(CUR);}
+let taps=0,tapT;
+$('#ttl').onclick=()=>{
+ if(document.body.classList.contains('editing'))return;
+ taps++;clearTimeout(tapT);
+ if(taps>=5){taps=0;setEdit(true);toast('✏️ 편집 모드가 켜졌습니다');
+  window.scrollTo({top:0,behavior:'smooth'});return;}
+ if(taps>=3)toast((5-taps)+'번 더 누르면 편집 모드');
+ tapT=setTimeout(()=>{taps=0;},1600);};
+$('#quit').onclick=()=>{setEdit(false);toast('편집 모드 종료');};
 $('#exp').onclick=()=>{const b=new Blob([JSON.stringify(DB,null,1)],{type:'application/json'});
  const a=document.createElement('a');a.href=URL.createObjectURL(b);
  a.download='약위치_수정본_'+new Date().toISOString().slice(0,10)+'.json';a.click();toast('파일로 저장됨');};
