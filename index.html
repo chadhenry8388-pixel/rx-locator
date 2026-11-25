@@ -390,16 +390,16 @@ function render(){
  plan();
 }
 
-const LAYOUT=[
- [null,'D','E','F','G','싱크대1',null],
- [null,'A','B','C',null,{n:'싱크대',t:'n'},'싱크대2'],
- ['라','트롤리2',null,null,null,null,'H'],
- ['다','트롤리1',{n:'조 제 실',t:'mid',span:4},'I'],
- ['나',null,null,null,null,null,'J'],
- ['가',null,null,null,null,null,'K'],
- [null,{n:'ATC',t:'n'},'조제대서랍',null,null,'향정위서랍',null],
- [null,null,'조제대4','조제대3','조제대2','조제대1',null],
- [null,null,null,null,null,null,{n:'안약장',t:'n'}]];
+const LAYOUT=[ /* 실제 조제실 방향에 맞춰 180도 회전한 배치 */
+ [{n:'안약장',t:'n'},null,null,null,null,null,null],
+ [null,'조제대1','조제대2','조제대3','조제대4',null,null],
+ [null,'향정위서랍',null,null,'조제대서랍',{n:'ATC',t:'n'},null],
+ ['K',null,null,null,null,null,'가'],
+ ['J',null,null,null,null,null,'나'],
+ ['I',{n:'조 제 실',t:'mid',span:4},'트롤리1','다'],
+ ['H',null,null,null,null,'트롤리2','라'],
+ ['싱크대2',{n:'싱크대',t:'n'},null,'C','B','A',null],
+ [null,'싱크대1','G','F','E','D',null]];
 function plan(){
  const has={};DB.drugs.forEach(d=>has[d.c]=(has[d.c]||0)+1);
  let h='';
